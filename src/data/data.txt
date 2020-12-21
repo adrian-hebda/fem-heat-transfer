@@ -1,0 +1,9 @@
+0,1 //wysokosc
+0,1 //szerokosc
+4 // liczba wezlow na wysokosc
+4 // liczba wezlow na szerokosc
+2 // npc - liczba punktow calkowania
+25,0 // wsp przewodzenia ciepla
+100,0 //temp początkowa
+700,0 // cieplo wlasciwe
+7800,0 // gestosc
