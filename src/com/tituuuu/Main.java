@@ -1,6 +1,7 @@
 package com.tituuuu;
 
-import com.tituuuu.models.*;
+import com.tituuuu.models.GlobalData;
+import com.tituuuu.models.Grid2d;
 
 public class Main {
 

@@ -7,12 +7,14 @@ public class Grid2d {
     public ArrayList<Node> allNodes = new ArrayList<>();
     public double[][] H;
     public double[][] C;
+    public double[] P;
 
     public Grid2d() {
-        evaluateNodesCoordinates();
+        calculateNodesCoordinates();
         signNodesToElements();
         calculateHGlobal();
         calculateCGlobal();
+        calculateP();
     }
 
     private void printMatrix(double[][] mat) {
@@ -25,12 +27,19 @@ public class Grid2d {
         System.out.println();
     }
 
-    private void calculateHGlobal(){
+    private void printVector(double[] vec) {
+        for (int i = 0; i < vec.length; i++) {
+            System.out.println(vec[i]);
+        }
+    }
+
+    private void calculateHGlobal() {
         H = new double[GlobalData.nN][GlobalData.nN];
         for (int i = 0; i < allElements.size(); i++) {
             for (int j = 0; j < allElements.get(i).nodes.size(); j++) {
                 for (int k = 0; k < allElements.get(i).nodes.size(); k++) {
                     H[allElements.get(i).nodes.get(j).id - 1][allElements.get(i).nodes.get(k).id - 1] += allElements.get(i).HLocal[j][k];
+                    H[allElements.get(i).nodes.get(j).id - 1][allElements.get(i).nodes.get(k).id - 1] += allElements.get(i).HBLocal[j][k];
                 }
             }
         }
@@ -51,7 +60,7 @@ public class Grid2d {
     private void signNodesToElements(){
         for (int i = 0; i < GlobalData.nW - 1; i++) {
             for (int j = 0; j < GlobalData.nH - 1; j++) {
-                ArrayList<Node> nodes = new ArrayList<Node>();
+                ArrayList<Node> nodes = new ArrayList<>();
                 nodes.add(allNodes.get((i * GlobalData.nW) + j));
                 nodes.add(allNodes.get(((i + 1) * GlobalData.nW) + j));
                 nodes.add(allNodes.get(((i + 1) * GlobalData.nW) + j + 1));
@@ -61,18 +70,28 @@ public class Grid2d {
         }
     }
 
-    private void evaluateNodesCoordinates(){
+    private void calculateNodesCoordinates() {
         int x = 0, y = 0; // origin of the coordinate system
         for (int i = 0; i < GlobalData.nW; i++) {
             for (int j = 0; j < GlobalData.nH; j++) {
                 double nodeX = x + (i * (GlobalData.w / (GlobalData.nW - 1)));
                 double nodeY = y + (j * (GlobalData.h / (GlobalData.nH - 1)));
                 boolean ifBoundary = false;
-                if(nodeX == x || nodeY == y || nodeX == (x + GlobalData.w) || nodeY == (y + GlobalData.h) ){
+                if (nodeX == x || nodeY == y || nodeX == (x + GlobalData.w) || nodeY == (y + GlobalData.h)) {
                     ifBoundary = true;
                 }
-                allNodes.add(new Node(nodeX, nodeY, ifBoundary));
+                allNodes.add(new Node(nodeX, nodeY, ifBoundary, GlobalData.initialTemperature));
             }
         }
+    }
+
+    private void calculateP() {
+        P = new double[GlobalData.nN];
+        for (int i = 0; i < allElements.size(); i++) {
+            for (int j = 0; j < allElements.get(i).nodes.size(); j++) {
+                P[allElements.get(i).nodes.get(j).id - 1] += allElements.get(i).PLocal[j];
+            }
+        }
+        printVector(P);
     }
 }

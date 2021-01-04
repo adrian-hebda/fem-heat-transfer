@@ -13,18 +13,23 @@ public class GlobalData {
     public static int nN; // number of all nodes
     public static int npc; // points of integration
     public static double K; // Conductivity
-    public static double t0;
-    public static double c;
+    public static double specificHeat;
     public static double ro;
+    public static double alpha;
+    public static double initialTemperature;
+    public static double ambientTemperature;
+    public static double simulationTime; // in seconds
+    public static double simulationTimeStep; // in seconds
 
-    public GlobalData(){
+
+    public GlobalData() {
         File dataFile;
         Scanner dataScanner;
 
         try {
             dataFile = new File("src/data/data.txt");
             dataScanner = new Scanner(dataFile);
-            if (dataScanner.hasNextLine()){
+            if (dataScanner.hasNextLine()) {
                 h = dataScanner.nextDouble();
                 dataScanner.nextLine();
                 w = dataScanner.nextDouble();
@@ -37,12 +42,21 @@ public class GlobalData {
                 dataScanner.nextLine();
                 K = dataScanner.nextDouble();
                 dataScanner.nextLine();
-                t0 = dataScanner.nextDouble();
+                initialTemperature = dataScanner.nextDouble();
                 dataScanner.nextLine();
-                c = dataScanner.nextDouble();
+                specificHeat = dataScanner.nextDouble();
                 dataScanner.nextLine();
                 ro = dataScanner.nextDouble();
+                dataScanner.nextLine();
+                alpha = dataScanner.nextDouble();
+                dataScanner.nextLine();
+                ambientTemperature = dataScanner.nextDouble();
+                dataScanner.nextLine();
+                simulationTime = dataScanner.nextDouble();
+                dataScanner.nextLine();
+                simulationTimeStep = dataScanner.nextDouble();
             }
+            dataScanner.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }

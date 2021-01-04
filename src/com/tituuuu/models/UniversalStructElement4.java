@@ -16,46 +16,52 @@ public class UniversalStructElement4 {
         public double[] eta;
         public double[][] N;
         public double detJ;
+        public boolean isBoundary;
+        public double[] weights;
 
-        public Side() {
-            ksi = new double[2];
-            eta = new double[2];
-            N = new double[2][4];
+        public Side(int npc) {
+            if (npc == 2) {
+                N = new double[2][4];
+            } else if (npc == 3) {
+                N = new double[3][4];
+            } else if (npc == 4) {
+                N = new double[4][4];
+            }
         }
     }
 
-    public UniversalStructElement4(double[] x, double[] y, int npc) {
+    public UniversalStructElement4(double[] x, double[] y, int npc, boolean[] isBoundary) {
+        double[] tempksi;
+        double[] tempeta;
+        int it = 0;
         switch (npc) {
             case 2:
                 w = new double[]{1, 1};
                 ksi = new double[]{-1 / Math.sqrt(3), 1 / Math.sqrt(3), 1 / Math.sqrt(3), -1 / Math.sqrt(3)};
                 eta = new double[]{-1 / Math.sqrt(3), -1 / Math.sqrt(3), 1 / Math.sqrt(3), 1 / Math.sqrt(3)};
 
-                sides = new Side[]{new Side(), new Side(), new Side(), new Side()};
-                double[] tempksi = new double[]{
-                        -1 / Math.sqrt(3),
-                        1 / Math.sqrt(3),
-                        1,
-                        1,
-                        1 / Math.sqrt(3),
-                        -1 / Math.sqrt(3),
-                        -1,
-                        -1};
-                double[] tempeta = new double[]{
-                        -1,
-                        -1,
-                        -1 / Math.sqrt(3),
-                        1 / Math.sqrt(3),
-                        1,
-                        1,
-                        1 / Math.sqrt(3),
-                        -1 / Math.sqrt(3)};
+                sides = new Side[]{new Side(npc), new Side(npc), new Side(npc), new Side(npc)};
+                tempksi = new double[]{
+                        -1 / Math.sqrt(3), 1 / Math.sqrt(3),
+                        1, 1,
+                        1 / Math.sqrt(3), -1 / Math.sqrt(3),
+                        -1, -1}
+                ;
+                tempeta = new double[]{
+                        -1, -1,
+                        -1 / Math.sqrt(3), 1 / Math.sqrt(3),
+                        1, 1,
+                        1 / Math.sqrt(3), -1 / Math.sqrt(3)
+                };
 
-                int it = 0;
                 for (int i = 0; i < 4; i++) {
                     sides[i].ksi = new double[]{tempksi[it], tempksi[it + 1]};
                     sides[i].eta = new double[]{tempeta[it], tempeta[it + 1]};
                     sides[i].detJ = Math.sqrt(Math.pow(x[2] - x[3], 2) + Math.pow(y[0] - y[1], 2)) / 2;
+                    sides[i].weights = w;
+                    if (isBoundary[i % 4] && isBoundary[(i + 1) % 4]) {
+                        sides[i].isBoundary = true;
+                    }
                     it += 2;
                 }
                 break;
@@ -66,7 +72,33 @@ public class UniversalStructElement4 {
                 double p3 = Math.sqrt(3.0 / 5.0);
                 ksi = new double[]{p1, p2, p3, p1, p2, p3, p1, p2, p3};
                 eta = new double[]{p1, p1, p1, p2, p2, p2, p3, p3, p3};
-                sides = null;
+
+                sides = new Side[]{new Side(npc), new Side(npc), new Side(npc), new Side(npc)};
+                tempksi = new double[]{
+                        p1, p2, p3,
+                        1, 1, 1,
+                        p3, p2, p1,
+                        -1, -1, -1
+                };
+                tempeta = new double[]{
+                        -1, -1, -1,
+                        p1, p2, p3,
+                        1, 1, 1,
+                        p3, p2, p1
+                };
+
+                it = 0;
+                for (int i = 0; i < 4; i++) {
+                    sides[i].ksi = new double[]{tempksi[it], tempksi[it + 1], tempksi[it + 2]};
+                    sides[i].eta = new double[]{tempeta[it], tempeta[it + 1], tempeta[it + 2]};
+                    sides[i].detJ = Math.sqrt(Math.pow(x[2] - x[3], 2) + Math.pow(y[0] - y[1], 2)) / 2;
+                    sides[i].weights = w;
+                    if (isBoundary[i % 4] && isBoundary[(i + 1) % 4]) {
+                        sides[i].isBoundary = true;
+                    }
+                    it += 3;
+                }
+
                 break;
             case 4:
                 w = new double[]{((18.0 - Math.sqrt(30)) / 36.0), (18.0 + Math.sqrt(30.0)) / 36.0, (18.0 + Math.sqrt(30.0)) / 36.0, (18.0 - Math.sqrt(30.0)) / 36.0};
@@ -84,7 +116,34 @@ public class UniversalStructElement4 {
                         -p22, -p11, p11, p22,
                         -p22, -p11, p11, p22
                 };
-                sides = null;
+
+                sides = new Side[]{new Side(npc), new Side(npc), new Side(npc), new Side(npc)};
+                tempksi = new double[]{
+                        -p22, -p11, p11, p22,
+                        1, 1, 1, 1,
+                        p22, p11, -p11, -p22,
+                        -1, -1, -1, -1
+                };
+                tempeta = new double[]{
+                        -1, -1, -1, -1,
+                        -p22, -p11, p11, p22,
+                        1, 1, 1, 1,
+                        p22, p11, -p11, -p22
+                };
+
+                it = 0;
+                for (int i = 0; i < 4; i++) {
+                    sides[i].ksi = new double[]{tempksi[it], tempksi[it + 1], tempksi[it + 2], tempksi[it + 3]};
+                    sides[i].eta = new double[]{tempeta[it], tempeta[it + 1], tempeta[it + 2], tempeta[it + 3]};
+                    sides[i].detJ = Math.sqrt(Math.pow(x[2] - x[3], 2) + Math.pow(y[0] - y[1], 2)) / 2;
+                    sides[i].weights = w;
+
+                    if (isBoundary[i % 4] && isBoundary[(i + 1) % 4]) {
+                        sides[i].isBoundary = true;
+                    }
+                    it += 4;
+                }
+
                 break;
             default:
                 w = null;
@@ -100,7 +159,6 @@ public class UniversalStructElement4 {
         evaluateNDerivatives();
         calculateN();
         evaluateInvertedJacobians(x, y);
-        calculateHB();
     }
 
     private double[] calculateWeights() {
@@ -233,7 +291,7 @@ public class UniversalStructElement4 {
             for (int i = 0; i < 4; i++) {
                 for (int j = 0; j < 4; j++) {
                     mat3[i][j] = N[k][i] * N[k][j];
-                    mat3[i][j] *= detJacobians[k] * GlobalData.ro * GlobalData.c;
+                    mat3[i][j] *= detJacobians[k] * GlobalData.ro * GlobalData.specificHeat;
                 }
             }
 
@@ -248,22 +306,37 @@ public class UniversalStructElement4 {
 
     public double[][] calculateHB() {
         double[][] HB = new double[4][4];
-        double[][] NNt = new double[4][4]; // N razy N transponowane
-        double[] weights = calculateWeights();
 
-        for (int k = 0; k < sides.length; k++) {
-            for (int i = 0; i < 4; i++) {
-                for (int j = 0; j < 4; j++) {
-                    NNt[i][j] = (sides[k].N[0][i] * sides[k].N[0][j]) + (sides[k].N[1][i] * sides[k].N[1][j]);
+        for (int side = 0; side < sides.length; side++) {
+            if (sides[side].isBoundary) {
+                double[][] NNt = new double[4][4];
+                for (int i = 0; i < sides.length; i++) {
+                    for (int j = 0; j < sides[side].N[0].length; j++) {
+                        for (int pc = 0; pc < sides[side].N.length; pc++) {
+                            NNt[i][j] += sides[side].N[pc][i] * sides[side].N[pc][j] * sides[side].weights[pc];
+                        }
+                    }
                 }
-            }
-
-            for (int i = 0; i < 4; i++) {
-                for (int j = 0; j < 4; j++) {
-                    HB[i][j] += NNt[i][j] * weights[k] * sides[k].detJ * 25;
+                for (int i = 0; i < sides.length; i++) {
+                    for (int j = 0; j < sides[side].N[0].length; j++) {
+                        HB[i][j] += sides[side].detJ * GlobalData.alpha * NNt[i][j];
+                    }
                 }
             }
         }
         return HB;
+    }
+
+    public double[] calculateP() {
+        double[] P = new double[4];
+
+        for (int k = 0; k < sides.length; k++) {
+            if (sides[k].isBoundary) {
+                for (int i = 0; i < sides.length; i++) {
+                    P[i] += -1.0 * sides[k].detJ * GlobalData.alpha * (sides[k].N[0][i] + sides[k].N[1][i]) * GlobalData.ambientTemperature;
+                }
+            }
+        }
+        return P;
     }
 }

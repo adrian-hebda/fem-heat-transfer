@@ -1,32 +1,36 @@
 package com.tituuuu.models;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class Element {
-    public ArrayList<Node> nodes = new ArrayList<>(4);
+    public ArrayList<Node> nodes;
     public static int elements = 0;
     public double[][] HLocal;
     public double[][] CLocal;
-    public double[][] HBlocal;
-    public Element(ArrayList<Node> nodes){
+    public double[][] HBLocal;
+    public double[] PLocal;
+
+    public Element(ArrayList<Node> nodes) {
         this.nodes = nodes;
         elements++;
-        createHLocal();
+        calculateProperties();
     }
 
-    private void createHLocal(){
+    private void calculateProperties() {
         double[] x = new double[nodes.size()];
         double[] y = new double[nodes.size()];
+        boolean[] isBoundary = new boolean[nodes.size()];
 
         for (int j = 0; j < nodes.size(); j++) {
             x[j] = nodes.get(j).x;
             y[j] = nodes.get(j).y;
+            isBoundary[j] = nodes.get(j).boundaryCondition;
         }
 
-        UniversalStructElement4 u = new UniversalStructElement4(x, y, GlobalData.npc);
+        UniversalStructElement4 u = new UniversalStructElement4(x, y, GlobalData.npc, isBoundary);
         HLocal = u.evaluateH();
         CLocal = u.evaluateC();
-        HBlocal = u.calculateHB();
+        HBLocal = u.calculateHB();
+        PLocal = u.calculateP();
     }
 }
