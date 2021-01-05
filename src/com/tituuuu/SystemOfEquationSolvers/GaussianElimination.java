@@ -23,11 +23,6 @@ public class GaussianElimination {
             b[p] = b[max];
             b[max] = t;
 
-            // singular or nearly singular
-            if (Math.abs(A[p][p]) <= EPSILON) {
-                throw new ArithmeticException("Matrix is singular or nearly singular");
-            }
-
             // pivot within A and b
             for (int i = p + 1; i < n; i++) {
                 double alpha = A[i][p] / A[p][p];

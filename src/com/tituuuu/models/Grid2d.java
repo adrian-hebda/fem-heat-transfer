@@ -17,7 +17,7 @@ public class Grid2d {
         calculateP();
     }
 
-    private void printMatrix(double[][] mat) {
+    public void printMatrix(double[][] mat) {
         for (int i = 0; i < mat.length; i++) {
             for (int j = 0; j < mat[i].length; j++) {
                 System.out.printf("%.2f  ", mat[i][j]);
@@ -27,7 +27,7 @@ public class Grid2d {
         System.out.println();
     }
 
-    private void printVector(double[] vec) {
+    public void printVector(double[] vec) {
         for (int i = 0; i < vec.length; i++) {
             System.out.println(vec[i]);
         }
@@ -61,10 +61,10 @@ public class Grid2d {
         for (int i = 0; i < GlobalData.nW - 1; i++) {
             for (int j = 0; j < GlobalData.nH - 1; j++) {
                 ArrayList<Node> nodes = new ArrayList<>();
-                nodes.add(allNodes.get((i * GlobalData.nW) + j));
-                nodes.add(allNodes.get(((i + 1) * GlobalData.nW) + j));
-                nodes.add(allNodes.get(((i + 1) * GlobalData.nW) + j + 1));
-                nodes.add(allNodes.get((i * GlobalData.nW) + j + 1));
+                nodes.add(allNodes.get((i * GlobalData.nH) + j));
+                nodes.add(allNodes.get(((i + 1) * GlobalData.nH) + j));
+                nodes.add(allNodes.get(((i + 1) * GlobalData.nH) + j + 1));
+                nodes.add(allNodes.get((i * GlobalData.nH) + j + 1));
                 allElements.add(new Element(nodes));
             }
         }
@@ -92,6 +92,31 @@ public class Grid2d {
                 P[allElements.get(i).nodes.get(j).id - 1] += allElements.get(i).PLocal[j];
             }
         }
-        printVector(P);
+    }
+
+    public double getMaxTemperature() {
+        return allNodes.stream().mapToDouble(node -> node.t0).max().getAsDouble();
+    }
+
+    public double getMinTemperature() {
+        return allNodes.stream().mapToDouble(node -> node.t0).min().getAsDouble();
+    }
+
+    public void signNewTemperatures(double[] newNodesTemperatures) {
+        for (int i = 0; i < newNodesTemperatures.length; i++) {
+            allNodes.get(i).t0 = newNodesTemperatures[i];
+        }
+    }
+
+    public void printTemperatures() {
+        System.out.println();
+        int it = 1;
+        for (Node node : allNodes) {
+            System.out.printf("%.2f  ", node.t0);
+            if (it % GlobalData.nH == 0)
+                System.out.println();
+            it++;
+        }
+        System.out.println();
     }
 }
